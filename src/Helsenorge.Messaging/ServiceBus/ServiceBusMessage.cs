@@ -14,6 +14,7 @@ namespace Helsenorge.Messaging.ServiceBus
     internal class ServiceBusMessage : IMessagingMessage
     {
         private readonly BrokeredMessage _implementation;
+        private bool _messageCompleted = false;
 
         public ServiceBusMessage(BrokeredMessage implementation)
         {
@@ -88,7 +89,15 @@ namespace Helsenorge.Messaging.ServiceBus
         [DebuggerStepThrough]
         public IMessagingMessage Clone() => new ServiceBusMessage(_implementation.Clone());
         [DebuggerStepThrough]
-        public void Complete() => _implementation.Complete();
+        public void Complete()
+        {
+            if (!_messageCompleted)
+            {
+                _implementation.Complete();
+                _messageCompleted = true;
+            }
+        }
+
         [DebuggerStepThrough]
         public Task CompleteAsync() => _implementation.CompleteAsync();
         [DebuggerStepThrough]
